@@ -13,3 +13,7 @@ python-dotenv
 fastapi
 uvicorn
 groq
+PyJWT
+pwdlib[argon2]
+xgboost
+shap
