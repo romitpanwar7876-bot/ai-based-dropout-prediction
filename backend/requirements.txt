@@ -1,0 +1,15 @@
+
+flask
+flask-cors
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+jupyter
+ucimlrepo
+joblib
+python-dotenv
+fastapi
+uvicorn
+groq
