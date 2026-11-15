@@ -10,9 +10,12 @@ const API = axios.create({
 
 API.interceptors.request.use(
   (config) => {
-    const adminToken = sessionStorage.getItem("admin_token");
-    const studentToken = sessionStorage.getItem("student_token");
-    const token = adminToken || studentToken;
+    let token = null;
+    if (config.url && config.url.includes("/student")) {
+      token = sessionStorage.getItem("student_token");
+    } else {
+      token = sessionStorage.getItem("admin_token") || sessionStorage.getItem("student_token");
+    }
 
     if (token && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${token}`;
