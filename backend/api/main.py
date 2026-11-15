@@ -110,7 +110,8 @@ app.add_middleware(
         "http://127.0.0.1:5173",
         "http://localhost:5174",
         "http://127.0.0.1:5174",
-        "https://ai-based-dropout-prediction-ten.vercel.app"
+        "https://ai-based-dropout-prediction-ten.vercel.app",
+        "https://ai-based-dropout-prediction-3p9n20se9-the-warriors3.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
