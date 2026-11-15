@@ -1,4 +1,3 @@
-
 import axios from "axios";
 
 const API = axios.create({
@@ -11,9 +10,11 @@ const API = axios.create({
 
 API.interceptors.request.use(
   (config) => {
-    const token = sessionStorage.getItem("admin_token");
+    const adminToken = sessionStorage.getItem("admin_token");
+    const studentToken = sessionStorage.getItem("student_token");
+    const token = adminToken || studentToken;
 
-    if (token) {
+    if (token && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
@@ -25,8 +26,15 @@ API.interceptors.request.use(
 export const checkBackend = async () =>
   (await API.get("/")).data;
 
+// ==========================================
+// ADMIN APIs
+// ==========================================
+
 export const loginAdmin = async (email, password) => {
   const response = await API.post("/login", { email, password });
+
+  sessionStorage.removeItem("student_token");
+  sessionStorage.removeItem("student_profile");
 
   sessionStorage.setItem("admin_token", response.data.access_token);
   sessionStorage.setItem(
@@ -48,7 +56,68 @@ export const predictStudent = async (studentData) =>
 export const getCounselling = async (studentData) =>
   (await API.post("/counsel", { student_data: studentData })).data;
 
+export const getExplainSamples = async () =>
+  (await API.get("/explain/samples")).data;
+
+export const getShapExplanation = async (studentData) =>
+  (await API.post("/explain", { student_data: studentData })).data;
+
 export const sendChatMessage = async (message) =>
   (await API.post("/chat", { message })).data;
+
+// Admin: Student Management & Approvals
+export const getPendingStudents = async () =>
+  (await API.get("/admin/pending-students")).data;
+
+export const updateStudentApproval = async (studentId, status) =>
+  (await API.patch(`/admin/students/${studentId}/approval`, { status })).data;
+
+export const getAllStudents = async () =>
+  (await API.get("/students")).data;
+
+export const searchStudents = async (query) =>
+  (await API.get("/students/search", { params: { q: query } })).data;
+
+export const createStudentRecord = async (studentData) =>
+  (await API.post("/students", studentData)).data;
+
+// ==========================================
+// STUDENT APIs
+// ==========================================
+
+export const registerStudentAccount = async (studentData) => {
+  const response = await API.post("/student/register", studentData);
+  return response.data;
+};
+
+export const loginStudent = async (email, password) => {
+  const response = await API.post("/student/login", { email, password });
+
+  sessionStorage.removeItem("admin_token");
+  sessionStorage.removeItem("admin_profile");
+
+  sessionStorage.setItem("student_token", response.data.access_token);
+  sessionStorage.setItem(
+    "student_profile",
+    JSON.stringify(response.data.student)
+  );
+
+  return response.data;
+};
+
+export const getStudentProfile = async () => {
+  const token = sessionStorage.getItem("student_token");
+  const response = await API.get("/student/me", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export const logoutStudent = () => {
+  sessionStorage.removeItem("student_token");
+  sessionStorage.removeItem("student_profile");
+};
 
 export default API;

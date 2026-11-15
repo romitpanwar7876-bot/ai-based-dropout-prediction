@@ -1,9 +1,9 @@
 
 import { useState } from "react";
-import { ShieldCheck, Lock, Mail, Eye, EyeOff } from "lucide-react";
+import { ShieldCheck, Lock, Mail, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { loginAdmin } from "../services/api";
 
-function Login({ onLogin }) {
+function Login({ onLogin, onBack }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -22,11 +22,7 @@ function Login({ onLogin }) {
     try {
       setLoading(true);
 
-      const response = await loginAdmin(
-        email.trim(),
-        password
-      );
-
+      const response = await loginAdmin(email.trim(), password);
       onLogin(response.admin);
 
     } catch (err) {
@@ -43,6 +39,15 @@ function Login({ onLogin }) {
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-5">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
 
+        <button
+          type="button"
+          onClick={onBack}
+          className="flex items-center gap-2 text-sm text-slate-500 hover:text-blue-600 mb-6"
+        >
+          <ArrowLeft size={18} />
+          Back to portal selection
+        </button>
+
         <div className="flex justify-center mb-5">
           <div className="bg-blue-100 p-4 rounded-2xl">
             <ShieldCheck size={36} className="text-blue-600" />
@@ -53,14 +58,12 @@ function Login({ onLogin }) {
           <h1 className="text-2xl font-bold text-slate-800">
             Admin Login
           </h1>
-
           <p className="text-sm text-slate-500 mt-2">
             AI-Based Student Dropout Prediction System
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
               Email Address
@@ -68,7 +71,6 @@ function Login({ onLogin }) {
 
             <div className="flex items-center border border-slate-300 rounded-lg px-3">
               <Mail size={18} className="text-slate-400" />
-
               <input
                 type="email"
                 placeholder="Enter admin email"
@@ -87,7 +89,6 @@ function Login({ onLogin }) {
 
             <div className="flex items-center border border-slate-300 rounded-lg px-3">
               <Lock size={18} className="text-slate-400" />
-
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter admin password"
@@ -119,13 +120,11 @@ function Login({ onLogin }) {
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>
-
         </form>
 
         <p className="text-center text-xs text-slate-400 mt-7">
           Authorized college administrators only
         </p>
-
       </div>
     </div>
   );

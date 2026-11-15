@@ -1,16 +1,16 @@
-
 import {
   LayoutDashboard,
   Users,
+  UserCheck,
   GraduationCap,
   MessageCircle,
   Brain,
-  BookOpen,
   X
 } from "lucide-react";
 
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard },
+  { name: "Manage Students", icon: UserCheck },
   { name: "Student Prediction", icon: GraduationCap },
   { name: "Counselling", icon: Users },
   { name: "Explainability", icon: Brain },

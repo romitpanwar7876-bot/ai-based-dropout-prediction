@@ -17,3 +17,4 @@ PyJWT
 pwdlib[argon2]
 xgboost
 shap
+email-validator
