@@ -38,6 +38,7 @@ from database import (
     search_students,
     get_all_students,
     get_admin_by_email,
+    create_admin,
     save_student_assessment,
     get_assessments_by_student_id,
 )
@@ -75,6 +76,12 @@ security = HTTPBearer(auto_error=False)
 
 initialize_database()
 
+# Ensure a default admin exists on fresh cloud deployments (e.g., Render)
+default_admin_email = os.getenv("DEFAULT_ADMIN_EMAIL", "romit123@gmail.com")
+default_admin_pass = os.getenv("DEFAULT_ADMIN_PASSWORD", "Admin@12345")
+if not get_admin_by_email(default_admin_email):
+    create_admin("Romit", default_admin_email, password_hasher.hash(default_admin_pass))
+
 
 # ------------------------------------------
 # 4. GROQ CONFIGURATION
@@ -102,7 +109,8 @@ app.add_middleware(
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:5174",
-        "http://127.0.0.1:5174"
+        "http://127.0.0.1:5174",
+        "https://ai-based-dropout-prediction-ten.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
