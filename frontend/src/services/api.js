@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// Determine base URL based on environment
-const API_BASE_URL = "http://127.0.0.1:8000"; // Update to your production URL if deployed live
+// Backend base URL (change to your deployed URL when live)
+const API_BASE_URL = "http://127.0.0.1:8000";
 
 const API = axios.create({
   baseURL: API_BASE_URL,
@@ -10,17 +10,20 @@ const API = axios.create({
   },
 });
 
-// Request Interceptor to attach correct token
+// ------------------------------------------
+// REQUEST INTERCEPTOR: choose the right token
+// ------------------------------------------
+
 API.interceptors.request.use(
   (config) => {
-    let token = null;
-    
-    // Check if the request is for student endpoints
-    if (config.url && config.url.includes("/student")) {
-      token = sessionStorage.getItem("student_token");
-    } else {
-      token = sessionStorage.getItem("admin_token") || sessionStorage.getItem("student_token");
-    }
+    const url = config.url || "";
+
+    // Only /student/... routes use the student token
+    const isStudentRoute = url.startsWith("/student/");
+
+    const token = isStudentRoute
+      ? sessionStorage.getItem("student_token")
+      : sessionStorage.getItem("admin_token");
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -32,7 +35,7 @@ API.interceptors.request.use(
 );
 
 // ------------------------------------------
-// AUTH & ADMIN SERVICES
+// ADMIN AUTH & ADMIN SERVICES
 // ------------------------------------------
 
 export const loginAdmin = async (email, password) => {
@@ -48,6 +51,21 @@ export const logoutAdmin = () => {
   sessionStorage.removeItem("admin_token");
   sessionStorage.removeItem("admin_profile");
 };
+
+export const getPendingStudents = async () =>
+  (await API.get("/admin/pending-students")).data;
+
+export const getAllStudents = async () =>
+  (await API.get("/students")).data;
+
+export const searchStudents = async (query) =>
+  (await API.get("/students/search", { params: { q: query } })).data;
+
+export const createStudentRecord = async (studentData) =>
+  (await API.post("/students", studentData)).data;
+
+export const updateStudentApproval = async (studentId, status) =>
+  (await API.patch(`/admin/students/${studentId}/approval`, { status })).data;
 
 // ------------------------------------------
 // STUDENT SERVICES
@@ -102,8 +120,7 @@ export const getExplainSamples = async () => {
   return { samples: [] };
 };
 
-export const getShapExplanation = async (studentData) => {
-  return (await API.post("/explain", { student_data: studentData })).data;
-};
+export const getShapExplanation = async (studentData) =>
+  (await API.post("/explain", { student_data: studentData })).data;
 
 export default API;

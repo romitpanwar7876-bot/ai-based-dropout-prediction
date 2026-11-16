@@ -791,7 +791,6 @@ def student_login(data: LoginRequest):
 # 21. STUDENT PROFILE
 # ------------------------------------------
 
-@app.get("/student/me")
 @app.post("/admin/students/{student_id}/assess")
 def assess_and_save_student(
     student_id: int,
